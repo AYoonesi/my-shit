@@ -1,4 +1,15 @@
-root /home/u1/domains/example.com;
+server {
+    listen 80;
+    server_name aliyoonesi.info www.aliyoonesi.info;
+    root /var/www/aliyoonesi.info;
+
+    index index.php index.html index.htm;
+
+    #location / {
+    #    try_files $uri $uri/ =404;
+    #}
+
+
 
 location / {
   rewrite ^/page/(.*)$ /index.php?cstart=$1;
@@ -55,6 +66,8 @@ location / {
     rewrite ^/page,([0-9]+),([^/]+).html$ /index.php?do=static&page=$2&news_page=$1;
     rewrite ^/([^/]+).html$ /index.php?do=static&page=$1;
   }
+
+  try_files $uri $uri/ =404;
 }
 
 location /xfsearch {
@@ -82,10 +95,14 @@ location ~* (engine/cache) {
   deny all;
 }
 
-location ~ \.php$ {
-  fastcgi_split_path_info ^(.+\.php)(/.+)$;
-  include fastcgi_params;
-  fastcgi_param SCRIPT_FILENAME $request_filename;
-  fastcgi_intercept_errors on;
-  fastcgi_pass unix:/var/run/php5-example.com.sock;
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+     }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
 }
